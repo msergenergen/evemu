@@ -24,6 +24,7 @@
 
 #define _GNU_SOURCE
 #include <linux/input.h>
+#include <limits.h>
 #include <dirent.h>
 #include <string.h>
 #include <stdio.h>
