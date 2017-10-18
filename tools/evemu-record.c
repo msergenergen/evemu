@@ -303,7 +303,7 @@ int main(int argc, char *argv[])
 
 	if (optind >= argc) {
 		if (autorestart) {
-			fprintf(stderr, "Option --autoresume requires an output file\n");
+			fprintf(stderr, "Option --autorestart requires an output file\n");
 			goto out;
 		}
 	} else {
