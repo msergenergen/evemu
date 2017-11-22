@@ -43,7 +43,7 @@ OPTIONS
 
 DIAGNOSTICS
 -----------
-If evtest-record does not see any events even though the device is being
+If evemu-record does not see any events even though the device is being
 used, the device may be grabbed by a process (EVIOCGRAB).  This is usually
 the case when debugging a synaptics or wacom device from within X. VT
 switching to a TTY or shutting down the X server terminates this grab and
