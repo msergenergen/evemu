@@ -771,7 +771,7 @@ int evemu_write_event(FILE *fp, const struct input_event *ev)
 {
 	int rc;
 	rc = fprintf(fp, "E: %lu.%06u %04x %04x %04d	",
-		     ev->time.tv_sec, (unsigned)ev->time.tv_usec,
+		     ev->input_event_sec, (unsigned)ev->input_event_usec,
 		     ev->type, ev->code, ev->value);
 	rc += write_event_desc(fp, ev);
 	return rc;
@@ -800,13 +800,19 @@ int evemu_record(FILE *fp, int fd, int ms)
 		if (ret < 0)
 			return ret;
 		if (ret == sizeof(ev)) {
+			struct timeval tv;
 			long time;
 
-			if (offset == 0)
-				offset = time_to_long(&ev.time) - 1;
+			tv.tv_sec = ev.input_event_sec;
+			tv.tv_usec = ev.input_event_usec;
 
-			time = time_to_long(&ev.time);
-			ev.time = long_to_time(time - offset);
+			if (offset == 0)
+				offset = time_to_long(&tv) - 1;
+
+			time = time_to_long(&tv);
+			tv = long_to_time(time - offset);
+			ev.input_event_sec = tv.tv_sec;
+			ev.input_event_usec = tv.tv_usec;
 			evemu_write_event(fp, &ev);
 			fflush(fp);
 		}
@@ -839,8 +845,8 @@ int evemu_read_event(FILE *fp, struct input_event *ev)
 		return -1;
 	}
 
-	ev->time.tv_sec = sec;
-	ev->time.tv_usec = usec;
+	ev->input_event_sec = sec;
+	ev->input_event_usec = usec;
 	ev->type = type;
 	ev->code = code;
 	ev->value = value;
@@ -852,8 +858,8 @@ out:
 
 int evemu_create_event(struct input_event *ev, int type, int code, int value)
 {
-	ev->time.tv_sec = 0;
-	ev->time.tv_usec = 0;
+	ev->input_event_sec = 0;
+	ev->input_event_usec = 0;
 	ev->type = type;
 	ev->code = code;
 	ev->value = value;
@@ -873,6 +879,7 @@ static inline unsigned long us2s(unsigned long us)
 int evemu_read_event_realtime(FILE *fp, struct input_event *ev,
 			      struct timeval *evtime)
 {
+	struct timeval tv;
 	unsigned long usec;
 	const unsigned long ERROR_MARGIN = 150; /* µs */
 	int ret;
@@ -882,14 +889,18 @@ int evemu_read_event_realtime(FILE *fp, struct input_event *ev,
 		return ret;
 
 	if (evtime) {
-		if (evtime->tv_sec == 0 && evtime->tv_usec == 0)
-			*evtime = ev->time;
-		usec = time_to_long(&ev->time) - time_to_long(evtime);
+		if (evtime->tv_sec == 0 && evtime->tv_usec == 0) {
+			evtime->tv_sec = ev->input_event_sec;
+			evtime->tv_usec = ev->input_event_usec;
+		}
+		tv.tv_sec = ev->input_event_sec;
+		tv.tv_usec = ev->input_event_usec;
+		usec = time_to_long(&tv) - time_to_long(evtime);
 		if (usec > ERROR_MARGIN * 2) {
 			if (usec > s2us(10))
 				error(INFO, "Sleeping for %lds.\n", us2s(usec));
 			usleep(usec - ERROR_MARGIN);
-			*evtime = ev->time;
+			*evtime = tv;
 		}
 	}
 
