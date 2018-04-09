@@ -924,7 +924,7 @@ static void evemu_warn_about_incompatible_event(struct input_event *ev)
 int evemu_play(FILE *fp, int fd)
 {
 	struct input_event ev;
-	struct timeval evtime;
+	struct timeval evtime = {0};
 	int ret;
 	struct evemu_device *dev;
 
@@ -936,7 +936,6 @@ int evemu_play(FILE *fp, int fd)
 		}
 	}
 
-	memset(&evtime, 0, sizeof(evtime));
 	while (evemu_read_event_realtime(fp, &ev, &evtime) > 0) {
 		if (dev &&
 		    (ev.type != EV_SYN || ev.code != SYN_MT_REPORT) &&
