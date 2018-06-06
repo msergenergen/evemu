@@ -5,7 +5,7 @@ The evemu library and tools are used to describe devices, record
 data, create devices and replay data from kernel evdev devices.
 
 * http://www.freedesktop.org/wiki/Evemu
-* http://cgit.freedesktop.org/evemu/
+* https://gitlab.freedesktop.org/libevdev/evtest
 
 Development
 -----------
@@ -28,7 +28,7 @@ Bugs
 
 Please report bugs in the bugzilla component at freedesktop.org
 
-<https://bugs.freedesktop.org/enter_bug.cgi?product=evemu>
+<https://gitlab.freedesktop.org/libevdev/evtest/issues>
 
 
 Device Description Format
