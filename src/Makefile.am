@@ -8,6 +8,9 @@ libevemu_la_LDFLAGS = \
 	-Wl,--version-script=$(version_script)
 
 libevemu_la_SOURCES = \
+	../include/linux/input.h \
+	../include/linux/uinput.h \
+	../include/linux/input-event-codes.h \
 	evemu-impl.h \
 	evemu.c \
 	evemu.h \
